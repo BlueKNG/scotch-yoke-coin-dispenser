@@ -1,0 +1,11 @@
+# files that run_all.m / build_parts.py regenerate locally
+sim/coins_result*.mat
+cad/parts/*.stl
+fabrication/3d_print/
+*.slxc
+slprj/
+__pycache__/
+*.asv
+*.log
+~$*
+cad/*.dxf
