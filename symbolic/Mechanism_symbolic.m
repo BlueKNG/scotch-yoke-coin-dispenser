@@ -89,7 +89,56 @@ CN = coinRun(p, K, thv, tEnd);
 fprintf('Coins: start 1 on the stem + 3 in the feed; after %d turns %d coins in the column\n', ...
     nTurn, CN.nCol(end));
 
-%% 6. Animation (fanimator): play it here, it is also saved as an AVI
+%% 6. Rocker tip vs time and disc speed; coin delivery rate vs disc speed
+% The yellow rocker (link 4) ends in the pawl pin G, the tip of its "7" hook. With the disc
+% speed N [rpm] the disc angle is th = w*t, w = 2*pi*N/60, so the tip is a function of t and N.
+% The path is the same at every speed: N only sets how fast it is traced (time scale 60/N).
+syms N positive
+wN     = 2*pi*N/60;                     % disc speed [rad/s]
+Tturn  = 60/N                           % time of one turn [s]
+phi_tN = subs(phi, th, wN*t)            % rocker angle, first turn 0 <= t < 60/N, then it repeats
+G_tN   = subs(G, th, wN*t);             % rocker tip (pawl pin) [x; y], first turn
+vG_tN  = diff(G_tN, t);                 % tip velocity: chain rule gives a factor N in every term
+% Coin delivery: the stem lifts the column by one coin per turn, the pawl holds it
+Q_min  = N                              % coins per minute = N (1 coin per turn)
+Q_s    = Q_min/60                       % coins per second
+vCol   = p.D*Q_s                        % column rise speed [m/s] = coin diameter * coins per second
+Nm     = N*78/20                        % TT motor speed for a disc at N (20/78 spur pair) [rpm]
+% Upper speed limit from coin lift-off: at top dead centre the stem decelerates at e*w^2;
+% above g the coin leaves the stem. (The feed and return-flow limits are higher, see Mechanism_src.m)
+Nlift  = double(solve(p.e*wN^2 == p.g, N))
+
+% Numbers: the tip path on one turn is the table K.G; look it up at th = w*t (periodic in t)
+Ns  = [14 30 60 120];                   % disc speeds [rpm]; 14 = measured on the built model
+tipAt = @(tq, Nq) per(K.G, thv, 2*pi*Nq/60*tq);          % tip [x; y] in m at times tq, speed Nq
+dG  = [gradient(K.G(1,:), thv); gradient(K.G(2,:), thv)];  % dG/dth [m/rad]
+sp  = hypot(dG(1,:), dG(2,:));
+fprintf('Rocker tip (pawl pin), one turn: x %.1f .. %.1f mm, y %.1f .. %.1f mm\n', ...
+    1e3*min(K.G(1,:)), 1e3*max(K.G(1,:)), 1e3*min(K.G(2,:)), 1e3*max(K.G(2,:)));
+for Nq = Ns
+    fprintf('  N = %3d rpm: one turn %.2f s, max tip speed %5.1f mm/s, %3d coins/min (%.2f /s)\n', ...
+        Nq, 60/Nq, 1e3*2*pi*Nq/60*max(sp), Nq, Nq/60);
+end
+fprintf('Coin lift-off limit: %.0f rpm; design %d rpm gives %d coins/min\n', Nlift, p.N, p.N);
+
+fq = figure('Color', 'w', 'Position', [100 100 1000 420]);
+if exist('theme', 'file'), theme(fq, 'light'); end
+ax1 = subplot(1, 2, 1); hold(ax1, 'on'); grid(ax1, 'on');
+tg = linspace(0, 4.3, 800);
+for Nq = Ns
+    Gq = tipAt(tg, Nq); plot(ax1, tg, 1e3*Gq(2,:), 'LineWidth', 1.4);
+end
+xlabel(ax1, 't [s]'); ylabel(ax1, 'rocker tip y [mm]'); title(ax1, 'Rocker tip height vs time');
+legend(ax1, compose('N = %d rpm', Ns), 'Location', 'eastoutside');
+ax2 = subplot(1, 2, 2); hold(ax2, 'on'); grid(ax2, 'on');
+Nv = linspace(0, Nlift, 100);
+plot(ax2, Nv, Nv, 'b', 'LineWidth', 1.6);                 % Q = N
+plot(ax2, [14 30], [14 30], 'ko', 'MarkerFaceColor', 'g');  % Simscape coin runs: 3 coins in 3 turns
+xline(ax2, Nlift, 'r--', 'lift-off limit');
+xlabel(ax2, 'disc speed N [rpm]'); ylabel(ax2, 'coins per minute');
+title(ax2, 'Delivery rate Q = N (dots: Simscape runs)');
+
+%% 7. Animation (fanimator): play it here, it is also saved as an AVI
 fig = figure('Color', 'w', 'Position', [100 50 620 860]);
 if exist('theme', 'file'), theme(fig, 'light'); end   % R2025a+: keep a white background
 ax = axes(fig); hold(ax, 'on'); axis(ax, 'equal'); box(ax, 'on');
