@@ -231,6 +231,8 @@ vTip = diff(yTip, t)
 aTip = diff(yTip, t, 2)
 Q    = N                                    % coins delivered per minute (one per turn)
 vCol = p.Dcoin*N/60;                        % mean rise speed of the coin column [m/s]
+G_tN = subs(G, th, wN*t);                   % rocker tip (pawl pin) [x; y] vs time and speed, first turn
+vG_tN = diff(G_tN, t);                      % its velocity: a factor N in every term
 
 % (a) Stem tip and pawl angle in time at three speeds
 Ns = [15 30 60];
