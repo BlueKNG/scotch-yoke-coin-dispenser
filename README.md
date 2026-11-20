@@ -87,7 +87,8 @@ An A4 (210 x 297 mm) model that mounts on a wall.
 |---|---|
 | `figures/Render.jpg` | Fusion 360 render of the assembly in the as-built colours. |
 | `figures/real_model.jpg` | Photo of the built model. |
-| `video/real_vdo_small.mp4` | The built model running (2 min, 540 x 960). Measured from the video: the slider cycle is 4.40 +/- 0.19 s (25 cycles), so the disc turns at 13.6 rpm, the speed the motor gave on the supply used. The design speed is 30 rpm. |
+| [YouTube video of the built model](https://youtube.com/shorts/oH2yGQ-jkGM) | The built model running, in full quality. |
+| `video/real_vdo_small.mp4` | The same video, small copy (2 min, 540 x 960). Measured from the video: the slider cycle is 4.40 +/- 0.19 s (25 cycles), so the disc turns at 13.6 rpm, the speed the motor gave on the supply used. The design speed is 30 rpm. |
 | `fabrication/3d_print_to_shop/` | STL files for the 3D printed parts (PETG), one version. The filament colour is in each file name. `cad/parts/` has the same parts as STEP. |
 | `fabrication/README.md`, `fabrication/COLOURS.md` | Part list and colours. |
 | `cad/Mechanism_assembly.step` | The whole assembly in one STEP file (disc at 0 deg, part colours kept). Opens in Fusion 360 and other CAD programs. |
